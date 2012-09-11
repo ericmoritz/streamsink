@@ -1,0 +1,12 @@
+{application, streamsink,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { streamsink_app, []}},
+  {env, []}
+ ]}.
