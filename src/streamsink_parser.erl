@@ -19,7 +19,10 @@ init() ->
     #parser_state{}.
 
 -spec parse(binary(), #parser_state{}) -> 
-    {MP3Bytes :: binary(), MetaDataBytes :: binary(), #parser_state{}}.
+    {ok, MP3Bytes :: binary(), MetaDataBytes :: binary(), #parser_state{}} |
+    {empty, #parser_state{}}.
+parse(<<>>, State = #parser_state{buffer= <<>>}) ->
+    {empty, State};
 parse(Bytes, State = #parser_state{phase=reading_status, buffer=Buffer}) ->
     AllBytes = <<Buffer/binary, Bytes/binary>>,
     NewState = case erlang:decode_packet(line, AllBytes, []) of
@@ -216,8 +219,9 @@ parse_test_() ->
                          #parser_state{phase=reading_stream,
                                        buffer= <<1, "buf">>,
                                        mp3_chunkbytes=10,
-                                       mp3_chunksize=10}))
-     
+                                       mp3_chunksize=10})),
+     ?_assertEqual({empty, #parser_state{buffer= <<>>}},
+                   parse(<<>>, #parser_state{buffer= <<>>}))
      ].
     
 
